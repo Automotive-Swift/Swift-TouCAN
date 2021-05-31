@@ -24,6 +24,7 @@ let package = Package(
         .target(
             name: "CTouCAN",
             dependencies: [],
+            exclude: ["README.md"],
             cSettings: [
                 CSetting.headerSearchPath("."),
                 CSetting.headerSearchPath("privateInclude"),
@@ -45,7 +46,8 @@ let package = Package(
         .target(
             name: "TouCAN",
             dependencies: ["CTouCAN"],
-            path: "Sources/SwiftTouCAN"
+            path: "Sources/SwiftTouCAN",
+            exclude: ["README.md"]
         ),
         .testTarget(
             name: "TouCAN-Tests",
