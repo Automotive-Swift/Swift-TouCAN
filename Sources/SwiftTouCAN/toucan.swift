@@ -1,5 +1,6 @@
 import CTouCAN
 import Foundation
+import Swift_CAN
 
 public class TouCAN {
 
@@ -90,7 +91,7 @@ public class TouCAN {
             }
         }
 
-        public init(id: UInt32, data: [UInt8]) {
+        public init(id: UInt32, dlc: UInt8? = nil, data: [UInt8]) {
             precondition(data.count > 0 && data.count < 9, "Unsupported data length. Data length should be between 1 and 8")
             self.id = id
             self.xtd = false
@@ -99,7 +100,7 @@ public class TouCAN {
             self.brs = false
             self.esi = false
             self.sts = false
-            self.dlc = max(8 as UInt8, UInt8(data.count))
+            self.dlc = dlc ?? max(8 as UInt8, UInt8(data.count))
             var data = data
             while data.count < 8 {
                 data = data + [0x55]
@@ -265,4 +266,28 @@ private extension can_bitrate_t {
         }
     }
 
+}
+
+extension TouCAN: CAN.Interface {
+
+    public func open(baudrate: Int) throws {
+        try self.connect(baudrate: baudrate)
+    }
+    
+    public func close() throws {
+        guard self.handle != Self.InvalidHandle else { return }
+        can_exit(self.handle)
+        self.handle = Self.InvalidHandle
+    }
+    
+    public func read(timeout: Int) throws -> CAN.Frame {
+        let timeout: UInt16 = (timeout == 0) ? 0xFFFF : UInt16(timeout)
+        let message = try self.readMessage(timeout: timeout)
+        return CAN.Frame(id: message.id, dlc: Int(message.dlc), unpadded: message.data, timestamp: message.timestamp)
+    }
+    
+    public func write(_ frame: CAN.Frame) throws {
+        let message = Message(id: frame.id, dlc: UInt8(frame.dlc), data: frame.data)
+        try self.writeMessage(message)
+    }
 }
