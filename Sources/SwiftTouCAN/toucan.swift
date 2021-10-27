@@ -282,12 +282,22 @@ extension TouCAN: CAN.Interface {
     
     public func read(timeout: Int) throws -> CAN.Frame {
         let timeout: UInt16 = (timeout == 0) ? 0xFFFF : UInt16(timeout)
-        let message = try self.readMessage(timeout: timeout)
-        return CAN.Frame(id: message.id, dlc: Int(message.dlc), unpadded: message.data, timestamp: message.timestamp)
+        do {
+            let message = try self.readMessage(timeout: timeout)
+            return CAN.Frame(id: message.id, dlc: Int(message.dlc), unpadded: message.data, timestamp: message.timestamp)
+        } catch TouCAN.Error.RX_EMPTY {
+            throw CAN.Error.timeout
+        } catch {
+            throw CAN.Error.readError
+        }
     }
     
     public func write(_ frame: CAN.Frame) throws {
         let message = Message(id: frame.id, dlc: UInt8(frame.dlc), data: frame.data)
-        try self.writeMessage(message)
+        do {
+            try self.writeMessage(message)
+        } catch {
+            throw CAN.Error.writeError
+        }
     }
 }
