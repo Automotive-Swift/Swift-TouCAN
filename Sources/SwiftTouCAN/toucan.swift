@@ -271,7 +271,12 @@ private extension can_bitrate_t {
 extension TouCAN: CAN.Interface {
 
     public func open(baudrate: Int) throws {
-        try self.connect(baudrate: baudrate)
+        do {
+            try self.connect(baudrate: baudrate)
+        } catch {
+            //FIXME: Sooner or later we might check the actual error and translate a bit more fine grained
+            throw CAN.Error.interfaceNotFound
+        }
     }
     
     public func close() throws {
