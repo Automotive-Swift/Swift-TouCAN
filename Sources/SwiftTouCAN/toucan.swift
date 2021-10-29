@@ -137,6 +137,9 @@ public class TouCAN {
         var cm: can_message_t {
             var cm = can_message_t()
             cm.id = self.id
+            if self.id > 0x7FF {
+                cm.xtd = 1
+            }
             cm.dlc = self.dlc
             switch self.dlc {
                 case 0: cm.data = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
