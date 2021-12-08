@@ -171,18 +171,27 @@ public class TouCAN {
     }
 
     private lazy var handle: Int32 = Self.InvalidHandle
+    public private(set) var bitrate: Int = -1
 
     public init() { }
 
-    /// Connect to the (first) CAN adapter with the given `mode` and `baudrate`.
-    public func connect(channel: UInt8 = 0, mode: Mode = .DEFAULT, baudrate: Int) throws {
+    /// Connect to the (first) CAN adapter with the given `mode` and `bitrate`.
+    public func connect(channel: UInt8 = 0, mode: Mode = .DEFAULT, bitrate: Int) throws {
         let handleOrResult = can_init(Int32(channel), mode.rawValue, nil)
         guard handleOrResult == CANERR_NOERROR else { throw Error(rawValue: handleOrResult) ?? Error.UNKNOWN }
 
-        guard var bitrate = can_bitrate_t(baudrate: baudrate) else { throw Error.BAUDRATE }
+        guard var br = can_bitrate_t(baudrate: bitrate) else { throw Error.BAUDRATE }
         self.handle = handleOrResult
-        let result = can_start(handle, &bitrate)
+        let result = can_start(handle, &br)
         guard result == CANERR_NOERROR else { throw Error(rawValue: handleOrResult) ?? Error.UNKNOWN }
+        self.bitrate = bitrate
+    }
+
+    public func close() throws {
+        guard self.handle != Self.InvalidHandle else { return }
+        can_exit(self.handle)
+        self.handle = Self.InvalidHandle
+        self.bitrate = -1
     }
 
     /// Read a message. The timeout is given in milliseconds with `0xFFFF` being _forever_.
@@ -272,20 +281,19 @@ private extension can_bitrate_t {
 }
 
 extension TouCAN: CAN.Interface {
+    
+    public var vendor: String { "Rusokucan" }
+    public var model: String { "TouCAN" }
+    public var serialNumber: String { "N/A" }
+    public var name: String { "TouCAN-USB1" }
 
-    public func open(baudrate: Int) throws {
+    public func open(bitrate: Int) throws {
         do {
-            try self.connect(baudrate: baudrate)
+            try self.connect(bitrate: bitrate)
         } catch {
             //FIXME: Sooner or later we might check the actual error and translate a bit more fine grained
             throw CAN.Error.interfaceNotFound
         }
-    }
-    
-    public func close() throws {
-        guard self.handle != Self.InvalidHandle else { return }
-        can_exit(self.handle)
-        self.handle = Self.InvalidHandle
     }
     
     public func read(timeout: Int) throws -> CAN.Frame {
