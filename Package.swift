@@ -23,20 +23,21 @@ let package = Package(
             dependencies: [],
             exclude: ["README.md"],
             cSettings: [
+                // unconditional
                 CSetting.headerSearchPath("."),
                 CSetting.headerSearchPath("privateInclude"),
-
                 CSetting.define("OPTION_CAN_2_0_ONLY=0"),
                 CSetting.define("OPTION_CANAPI_DRIVER=1"),
-                CSetting.define("OPTION_CANAPI_RETVALS=1"),
                 CSetting.define("OPTION_CANAPI_COMPANIONS=1"),
-                CSetting.define("OPTION_MACCAN_LOGGER=1"),
+                CSetting.define("OPTION_CANAPI_RETVALS=1"),
                 CSetting.define("OPTION_MACCAN_MULTICHANNEL=0"),
                 CSetting.define("OPTION_MACCAN_PIPE_TIMEOUT=0"),
-                CSetting.define("OPTION_MACCAN_DEBUG_LEVEL=5"),
                 CSetting.define("OPTION_MACCAN_INSTRUMENTATION=0"),
-                CSetting.define("OPTION_CANAPI_DEBUG_LEVEL=5"),
                 CSetting.define("OPTION_CANAPI_INSTRUMENTATION=0"),
+                // only for debug
+                CSetting.define("OPTION_MACCAN_LOGGER=1", .when(platforms: nil, configuration: .debug)),
+                CSetting.define("OPTION_MACCAN_DEBUG_LEVEL=5", .when(platforms: nil, configuration: .debug)),
+                CSetting.define("OPTION_CANAPI_DEBUG_LEVEL=5", .when(platforms: nil, configuration: .debug)),
             ]
         ),
         .target(
