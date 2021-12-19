@@ -135,8 +135,15 @@ int can_init(int32_t channel, uint8_t mode, const void *param)
         .byte = mode
     };
     if (!init) {
-        // TODO: ...
+#if (OPTION_CANAPI_TOUCAN_DYLIB == 0)
+        MacCAN_Return_t retVal = CMacCAN::Initializer();
+    #if (OPTION_CANAPI_DEBUG_LEVEL != 0)
+        fprintf(stdout, "CMacCAN::Initializer returned %i\n", retVal);
+    #endif
+        init = (retVal == 0);
+#else
         init = 1;
+#endif
     }
     // sanity check
     if (!init)
@@ -180,6 +187,7 @@ int can_exit(int handle)
 #if (OPTION_CANAPI_DEBUG_LEVEL != 0)
     fprintf(stdout, "CTouCAN[%i].TeardownChannel: returned %i\n", handle, retVal);
 #endif
+    (void) CMacCAN::Finalizer();
     return (int)retVal;
 }
 
