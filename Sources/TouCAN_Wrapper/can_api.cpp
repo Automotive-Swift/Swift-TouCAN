@@ -47,7 +47,7 @@ static const char version[] = "CAN API V3 for Rusoku TouCAN USB Interfaces, Vers
 #include <string.h>
 #include <assert.h>
 
-#if (OPTION_CANAPI_TOUCAN_DYLIB != 0)
+#if (OPTION_CANAPI_TOUCAN_AUTO_INIT != 0)
 __attribute__((constructor))
 static void _initializer() {
 #if (OPTION_CANAPI_DEBUG_LEVEL != 0)
@@ -58,6 +58,8 @@ static void _initializer() {
     (void) CMacCAN::Initializer();
 #endif
 }
+#endif
+#if (OPTION_CANAPI_TOUCAN_AUTO_FINALIZE != 0)
 __attribute__((destructor))
 static void _finalizer() {
 #if (OPTION_CANAPI_DEBUG_LEVEL != 0)
@@ -187,7 +189,6 @@ int can_exit(int handle)
 #if (OPTION_CANAPI_DEBUG_LEVEL != 0)
     fprintf(stdout, "CTouCAN[%i].TeardownChannel: returned %i\n", handle, retVal);
 #endif
-    (void) CMacCAN::Finalizer();
     return (int)retVal;
 }
 

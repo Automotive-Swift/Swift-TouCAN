@@ -27,6 +27,8 @@ let package = Package(
                 CSetting.headerSearchPath("."),
                 CSetting.headerSearchPath("privateInclude"),
                 CSetting.define("OPTION_CAN_2_0_ONLY=0"),
+                CSetting.define("OPTION_CANAPI_TOUCAN_AUTO_INIT=0"),
+                CSetting.define("OPTION_CANAPI_TOUCAN_AUTO_FINALIZE=1"),
                 CSetting.define("OPTION_CANAPI_DRIVER=1"),
                 CSetting.define("OPTION_CANAPI_COMPANIONS=1"),
                 CSetting.define("OPTION_CANAPI_RETVALS=1"),
