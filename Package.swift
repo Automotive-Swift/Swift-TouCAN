@@ -31,7 +31,6 @@ let package = Package(
                 CSetting.define("OPTION_CANAPI_TOUCAN_AUTO_FINALIZE=1"),
                 CSetting.define("OPTION_CANAPI_DRIVER=1"),
                 CSetting.define("OPTION_CANAPI_COMPANIONS=1"),
-                CSetting.define("OPTION_CANAPI_RETVALS=1"),
                 CSetting.define("OPTION_MACCAN_MULTICHANNEL=0"),
                 CSetting.define("OPTION_MACCAN_PIPE_TIMEOUT=0"),
                 CSetting.define("OPTION_MACCAN_INSTRUMENTATION=0"),
@@ -40,6 +39,7 @@ let package = Package(
                 CSetting.define("OPTION_MACCAN_LOGGER=1", .when(platforms: nil, configuration: .debug)),
                 CSetting.define("OPTION_MACCAN_DEBUG_LEVEL=5", .when(platforms: nil, configuration: .debug)),
                 CSetting.define("OPTION_CANAPI_DEBUG_LEVEL=5", .when(platforms: nil, configuration: .debug)),
+                CSetting.define("OPTION_CANAPI_RETVALS=1", .when(platforms: nil, configuration: .debug)),
             ]
         ),
         .target(
