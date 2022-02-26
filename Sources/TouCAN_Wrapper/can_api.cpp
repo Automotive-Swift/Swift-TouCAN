@@ -47,6 +47,8 @@ static const char version[] = "CAN API V3 for Rusoku TouCAN USB Interfaces, Vers
 #include <string.h>
 #include <assert.h>
 
+static int init = 0; // initialization flag
+
 #if (OPTION_CANAPI_TOUCAN_AUTO_INIT != 0)
 __attribute__((constructor))
 static void _initializer() {
@@ -62,6 +64,9 @@ static void _initializer() {
 #if (OPTION_CANAPI_TOUCAN_AUTO_FINALIZE != 0)
 __attribute__((destructor))
 static void _finalizer() {
+#if (OPTION_CANAPI_TOUCAN_AUTO_INIT == 0)
+    if (!init) { return; }
+#endif
 #if (OPTION_CANAPI_DEBUG_LEVEL != 0)
     fprintf(stdout, "[%s] [%s]\n", __FILE__, __FUNCTION__);
     MacCAN_Return_t retVal = CMacCAN::Finalizer();
@@ -93,7 +98,6 @@ static void _finalizer() {
      {EOF, NULL}
  };
 static CTouCAN canDevices[CAN_MAX_HANDLES];  // list of TouCAN device driver
-static int init =  0;  // initialization flag
 
 EXPORT
 int can_test(int32_t channel, uint8_t mode, const void *param, int *result)
